@@ -22,7 +22,7 @@
       router
     >
       <!-- 遍历 -->
-     <el-submenu v-for="tree in treelist" :index="tree.index" :key="tree.index">
+      <el-submenu v-for="tree in treelist" :index="tree.index" :key="tree.index">
         <template slot="title">
           <span>{{ tree.meta.title}}</span>
         </template>
@@ -40,9 +40,7 @@
 <script>
 export default {
   data() {
-    return {
-      treelist: this.$store.getters.showList
-    };
+    return {};
   },
   methods: {
     handleOpen(key, keyPath) {
@@ -52,29 +50,15 @@ export default {
       console.log(key, keyPath);
     },
     logOut() {
-      localStorage.removeItem("token")
+      localStorage.removeItem("token");
       this.$router.replace("/login");
     }
   },
-  computed:{
-  },
-  // mounted() {
-  //   const self = this;
-  //   let token = localStorage.getItem("token");
-  //   getname({ token }).then(res => {
-  //     if(res.code === 0){
-  //       this.userInf.username = res.username;
-  //       this.userInf.role = res.role
-  //     }else{
-  //       this.$message({
-  //           type: "error",
-  //           message: res.msg,
-  //           duration: 1000,
-  //         });
-  //             self.$router.replace("/login")
-  //     }
-  //   });
-  // }
+  computed: {
+    treelist() {
+      return this.$store.getters.showList;
+    }
+  }
 };
 </script>
 <style lang="less" Scoped>

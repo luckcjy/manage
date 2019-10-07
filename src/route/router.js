@@ -8,6 +8,7 @@ Vue.use(VueRouter)
 let flag = true;
 
 let router = new VueRouter({
+  // 初始页面只有登录
   routes: [
     {
       path: '/login',
@@ -19,6 +20,7 @@ let router = new VueRouter({
 })
 //需要权限管理的路由
 export const allRoute = {
+  //一级页面
   index: [
     {
       path: "/",
@@ -27,7 +29,6 @@ export const allRoute = {
       redirect: '/goods',
     }
   ],
-  // 导航目录
   // 二级页面
   children: [
     {
@@ -110,27 +111,24 @@ export const allRoute = {
       path: '*',
       name: 'notfound',
       component: () => import('../pages/notfound.vue')
-    }
+}
 
 //路由守卫
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   if (token) {
-    // token 存在加载路由
+    // token 存在且不是从登录页面进入的加载一次路由
     if(flag && from.path != "/login"){
       setTimeout(() => {
         flag = false;
         router.app.$store.dispatch("getRole","role")
       });
     }
-
-
     if (to.path == "/login") {
       next({ path: '/' })
     } else {
       next()
     }
-
   } else {
     // token不存在则直接进入登录页
     if (to.path != "/login") {

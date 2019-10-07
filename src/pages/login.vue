@@ -22,9 +22,6 @@
 </template>
 <script>
 import { login } from "../api/http";
-// import { getLogin } from '../api/mock'
-// import {allRoute} from '../route/router'
-
 export default {
   data() {
     return {
@@ -53,6 +50,7 @@ export default {
           }
         ]
       },
+      postState: true //防抖
     };
   },
   methods: {
@@ -62,42 +60,46 @@ export default {
     },
     //提交表单
     submitForm() {
-      const _this = this;
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          login(this.loginForm).then(response => {
-            let { code, token, msg } = response;
-            if (code === 0) {
-              let userInf = localStorage.setItem("token", token);
-              _this.$store.dispatch("getRole", { token });
-              this.$message({
-                message: msg,
-                type: "success",
-                duration: 1000,
-                onClose() {
-                  _this.$router.replace("/");
-                }
-              });
-            } else if (code === 1) {
-              this.$message({
-                message: msg,
-                type: "warning",
-                duration: 1000
-              });
-            }
-          });
-        } else {
-          this.$message({
-            message: "登录失败,请重新填写表单",
-            type: "warning",
-            duration: 1000
-          });
-          return false;
-        }
-      });
+      if (this.postState) {
+        this.postState = false; //点击后就禁止触发
+        const _this = this;
+        this.$refs.loginForm.validate(valid => {
+          if (valid) {
+            login(this.loginForm).then(response => {
+              let { code, token, msg } = response;
+              if (code === 0) {
+                let userInf = localStorage.setItem("token", token);
+                _this.$store.dispatch("getRole", { token });
+                this.$message({
+                  message: msg,
+                  type: "success",
+                  duration: 1000,
+                  onClose() {
+                    _this.$router.replace("/");
+                  }
+                });
+              } else if (code === 1) {
+                this.postState = true;
+                this.$message({
+                  message: msg,
+                  type: "warning",
+                  duration: 1000
+                });
+              }
+            });
+          } else {
+             this.postState = true;
+            this.$message({
+              message: "登录失败,请重新填写表单",
+              type: "warning",
+              duration: 1000
+            });
+            return false;
+          }
+        });
+      }
     }
-  },
-  
+  }
 };
 </script>
 <style lang="less" Scoped>
